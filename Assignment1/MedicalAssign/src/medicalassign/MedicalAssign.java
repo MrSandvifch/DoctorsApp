@@ -7,9 +7,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.*;
 /**
@@ -18,6 +25,7 @@ import javax.swing.table.*;
  */
 public class MedicalAssign extends javax.swing.JFrame {
     DefaultTableModel dm;
+    
     /**
      * Creates new form MedicalAssign
      */
@@ -38,25 +46,25 @@ public class MedicalAssign extends javax.swing.JFrame {
         jFileChooser1 = new javax.swing.JFileChooser();
         jFileChooser2 = new javax.swing.JFileChooser();
         jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        CertsButton = new javax.swing.JButton();
+        TimeImportButton = new javax.swing.JButton();
+        QuitButton = new javax.swing.JButton();
+        ShowAvailableButton = new javax.swing.JButton();
+        ReportButton = new javax.swing.JButton();
+        LabelButton = new javax.swing.JLabel();
+        MainTablePane = new javax.swing.JScrollPane();
         MainTable = new javax.swing.JTable();
         NameField = new javax.swing.JTextField();
         AddressField = new javax.swing.JTextField();
         ContactField = new javax.swing.JTextField();
         DateField = new javax.swing.JTextField();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        AddButton = new javax.swing.JButton();
+        UpdateButton = new javax.swing.JButton();
         DisciplineComboBox = new javax.swing.JComboBox<>();
         DeleteButton = new javax.swing.JButton();
         ExportButton = new javax.swing.JButton();
         ImportButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        TimeTablePane = new javax.swing.JScrollPane();
         TimeTable = new javax.swing.JTable();
         FilterField = new javax.swing.JTextField();
 
@@ -64,27 +72,37 @@ public class MedicalAssign extends javax.swing.JFrame {
 
         jLabel1.setText("Medical System");
 
-        jButton2.setText("Check Latest Certs");
-
-        jButton3.setText("Load Weekly Availability");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        jButton4.setText("Quit");
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+        CertsButton.setText("Check Latest Certs");
+        CertsButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton4MouseClicked(evt);
+                CertsButtonMouseClicked(evt);
             }
         });
 
-        jButton5.setText("Show Available Doctors");
+        TimeImportButton.setText("Load Weekly Availability");
+        TimeImportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TimeImportButtonActionPerformed(evt);
+            }
+        });
 
-        jButton6.setText("Show Gaps in Availability");
+        QuitButton.setText("Quit");
+        QuitButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                QuitButtonMouseClicked(evt);
+            }
+        });
 
-        jLabel2.setText("Application Functions");
+        ShowAvailableButton.setText("Show Available Doctors");
+
+        ReportButton.setText("Generate Time Report");
+        ReportButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ReportButtonMouseClicked(evt);
+            }
+        });
+
+        LabelButton.setText("Application Functions");
 
         MainTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -102,7 +120,7 @@ public class MedicalAssign extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(MainTable);
+        MainTablePane.setViewportView(MainTable);
 
         NameField.setText("Name");
 
@@ -113,17 +131,17 @@ public class MedicalAssign extends javax.swing.JFrame {
         DateField.setText("Date of Latest Certification");
         DateField.setToolTipText("");
 
-        jButton7.setText("Add Row");
-        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+        AddButton.setText("Add Row");
+        AddButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton7MouseClicked(evt);
+                AddButtonMouseClicked(evt);
             }
         });
 
-        jButton8.setText("Update Row");
-        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+        UpdateButton.setText("Update Row");
+        UpdateButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton8MouseClicked(evt);
+                UpdateButtonMouseClicked(evt);
             }
         });
 
@@ -176,7 +194,7 @@ public class MedicalAssign extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(TimeTable);
+        TimeTablePane.setViewportView(TimeTable);
 
         FilterField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -199,22 +217,22 @@ public class MedicalAssign extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(78, 78, 78)
-                                .addComponent(jLabel2))
+                                .addComponent(LabelButton))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(41, 41, 41)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(ImportButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(ExportButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-                                    .addComponent(DeleteButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addComponent(AddButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(UpdateButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(DeleteButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(CertsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jButton6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addComponent(ReportButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(TimeImportButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(ShowAvailableButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(32, 32, 32)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -228,12 +246,12 @@ public class MedicalAssign extends javax.swing.JFrame {
                                 .addComponent(DisciplineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(DateField, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1)
-                            .addComponent(jScrollPane2))))
+                            .addComponent(MainTablePane)
+                            .addComponent(TimeTablePane))))
                 .addContainerGap(16, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jButton4)
+                .addComponent(QuitButton)
                 .addGap(45, 45, 45))
         );
         layout.setVerticalGroup(
@@ -248,98 +266,102 @@ public class MedicalAssign extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addComponent(MainTablePane, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(48, 48, 48)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(AddressField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ContactField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(DateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(NameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(DisciplineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(LabelButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton7)
+                        .addComponent(AddButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton8)
+                        .addComponent(UpdateButton)
                         .addGap(4, 4, 4)
                         .addComponent(DeleteButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ExportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ImportButton))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(48, 48, 48)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(AddressField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ContactField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(DateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(NameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(DisciplineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(ImportButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CertsButton)))
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton6)
+                        .addComponent(ReportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3)
+                        .addComponent(TimeImportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(ShowAvailableButton))
+                    .addComponent(TimeTablePane, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(66, 66, 66)
-                .addComponent(jButton4))
+                .addComponent(QuitButton))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
+    private void AddButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AddButtonMouseClicked
+        //Pulls text from text boxes into Main Table
         DefaultTableModel model = (DefaultTableModel) MainTable.getModel();
         model.addRow(new Object []{NameField.getText(),AddressField.getText(),ContactField.getText(), DisciplineComboBox.getSelectedItem().toString(), DateField.getText()});
-    }//GEN-LAST:event_jButton7MouseClicked
+    }//GEN-LAST:event_AddButtonMouseClicked
 
-    private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
+    private void UpdateButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UpdateButtonMouseClicked
+        //Pulls text from text boxes updating selected row in Main Table
         DefaultTableModel model = (DefaultTableModel) MainTable.getModel();
         model.setValueAt(NameField.getText(), MainTable.getSelectedRow(), 0);
         model.setValueAt(AddressField.getText(), MainTable.getSelectedRow(), 1);
         model.setValueAt(ContactField.getText(), MainTable.getSelectedRow(), 2);
         model.setValueAt(DisciplineComboBox.getSelectedItem().toString(), MainTable.getSelectedRow(), 3);
         model.setValueAt(DateField.getText(), MainTable.getSelectedRow(), 4);
-    }//GEN-LAST:event_jButton8MouseClicked
+    }//GEN-LAST:event_UpdateButtonMouseClicked
 
     private void DeleteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DeleteButtonMouseClicked
+        //Deletes selected row from Main Table
         DefaultTableModel model = (DefaultTableModel) MainTable.getModel();
         model.removeRow(MainTable.getSelectedRow());
     }//GEN-LAST:event_DeleteButtonMouseClicked
 
-    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+    private void QuitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_QuitButtonMouseClicked
+        //Closes Application
         System.out.println("Closing Application");
         System.exit(0);
-    }//GEN-LAST:event_jButton4MouseClicked
-
+    }//GEN-LAST:event_QuitButtonMouseClicked
 
     private void ExportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExportButtonActionPerformed
-        String filePath = "E:\\Year Two Pen Files\\COM373\\Projects\\Assignment1\\MedicalAssign\\Medical Export File.txt";
+        //Exports current contents of Main Table to a text file which can later be used as backup / import
+        String filePath = "D:\\Year Two Pen Files\\COM373\\Projects\\Assignment1\\MedicalAssign\\Medical Export File.txt";
         File file = new File(filePath);
         try {
             FileWriter fw = new FileWriter(file);
             BufferedWriter bw = new BufferedWriter(fw);
-            
-            
-            for(int i = 0; i < MainTable.getRowCount(); i++) //Rows
+            //For loop for processing each row and column
+            for(int i = 0; i < MainTable.getRowCount(); i++)//Rows
             {
-                for(int j = 0; j < MainTable.getColumnCount(); j++) //Columns
+                for(int j = 0; j < MainTable.getColumnCount(); j++)//Columns
                 {
-                    bw.write(MainTable.getValueAt(i, j).toString());
-                    //bw.write("|");
+                    bw.write(MainTable.getValueAt(i, j).toString());//Get Value and write to text file
                     bw.write("  ");
-                }
-                
+                }    
                 bw.newLine();
             }
-            
             bw.close();
             fw.close();
-        } catch (IOException ex) {
+        } 
+        
+        catch (IOException ex) //IOException catch statement
+        {
             Logger.getLogger(MedicalAssign.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ExportButtonActionPerformed
 
     private void ExportButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExportButtonMouseClicked
-
+        
     }//GEN-LAST:event_ExportButtonMouseClicked
 
     private void ImportButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ImportButtonMouseClicked
@@ -347,6 +369,7 @@ public class MedicalAssign extends javax.swing.JFrame {
     }//GEN-LAST:event_ImportButtonMouseClicked
 
     private void ImportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImportButtonActionPerformed
+        //Imports into Main Table 
         String filePath = "D:\\Year Two Pen Files\\COM373\\Projects\\Assignment1\\MedicalAssign\\Medical Import File.txt";
         File file = new File(filePath);
         try 
@@ -354,60 +377,151 @@ public class MedicalAssign extends javax.swing.JFrame {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
             DefaultTableModel model = (DefaultTableModel)MainTable.getModel();
-            Object[] lines = br.lines().toArray();
-
+            Object[] lines = br.lines().toArray(); //Reads lines from text file and stores as a local array
+            
+            //For loop for adding records to main table
             for(int i = 0; i < lines.length; i++)
             {
-                
-                String[] row = lines[i].toString().split("   "); //Needs to be 3 spaces
+                String[] row = lines[i].toString().split("   "); //Records are to be seperated by 3 spaces
                 model.addRow(row);
             }
         } 
-        catch (FileNotFoundException ex) 
+        catch (FileNotFoundException ex)//Catch for file not found
         {
             Logger.getLogger(MedicalAssign.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
     }//GEN-LAST:event_ImportButtonActionPerformed
-    private void Filter (String Query)
-    {
-      
-    }
-    
-    
-    
-    
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+ 
+    private void TimeImportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TimeImportButtonActionPerformed
+        //Imports data into Time Table
         String filePath = "D:\\Year Two Pen Files\\COM373\\Projects\\Assignment1\\MedicalAssign\\Availability Update File Test.txt";
         File file = new File(filePath);
-
         try 
         {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
             DefaultTableModel model = (DefaultTableModel)TimeTable.getModel();
-            Object[] lines = br.lines().toArray();
+            Object[] lines = br.lines().toArray();//Read lines in file to local array
             
+            //For loop for reading and splitting records
             for(int i = 0; i < lines.length; i++)
             {
-                String [] row = lines[i].toString().split("  "); //Needs to be split by new line
+                String [] row = lines[i].toString().split("  "); //Seperated by new line
                 model.addRow(row);
             }
         } 
-        catch (FileNotFoundException ex) 
+        catch (FileNotFoundException ex)//Catch for file not found
         {
             Logger.getLogger(MedicalAssign.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_TimeImportButtonActionPerformed
 
     private void FilterFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FilterFieldKeyReleased
-        String Query = FilterField.getText();
+        //Code for Main Table Filter
+        String Query = FilterField.getText(); //Receives text from input
         DefaultTableModel model = (DefaultTableModel)MainTable.getModel();
-        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
-        MainTable.setRowSorter(tr);
-        tr.setRowFilter(RowFilter.regexFilter(Query));
+        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model); //Intialises new row sorter
+        MainTable.setRowSorter(tr); //Selects Table for query
+        tr.setRowFilter(RowFilter.regexFilter(Query)); //Uses input text as filter on table
     }//GEN-LAST:event_FilterFieldKeyReleased
+
+    private void CertsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CertsButtonMouseClicked
+        //Code for searching table for rows with certifications
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+        Calendar cal  = Calendar.getInstance();
+        try {
+           //Local Varialbles
+           String LastYear = "04/12/2016";
+           //Obtaining records for comparison
+           Object JohnValueAt = MainTable.getModel().getValueAt(4, 4); 
+           Object NicValueAt = MainTable.getModel().getValueAt(8, 4);
+           //Console check of dates
+           System.out.println(JohnValueAt.toString());
+           System.out.println(NicValueAt.toString());
+           //Setting date variables for comparison
+           Date JohnDate = sdf.parse(JohnValueAt.toString());
+           Date NicDate = sdf.parse(NicValueAt.toString());
+           Date LastYearToday = sdf.parse(LastYear);
+           //Console Feedback
+           System.out.println("Testing Certifications of : John Smith, Nicola Johnston");
+           
+           //Logic comparrison of dates
+           if(JohnDate.before(LastYearToday))
+           {
+               JOptionPane.showMessageDialog(rootPane, "John Smith : Certification is older than 1 year");
+           } 
+           if(JohnDate.after(LastYearToday))
+           {
+               JOptionPane.showMessageDialog(rootPane, "John Smith : Certification is valid");
+           }
+           if(NicDate.before(LastYearToday))
+           {
+               JOptionPane.showMessageDialog(rootPane, "Nicola Johnston : Certification is older than 1 year");
+           }
+           if(NicDate.after(LastYearToday))
+           {
+               JOptionPane.showMessageDialog(rootPane, "Nicola Johnston : Certification is valid");
+           }
+           
+        } 
+        catch (ParseException ex)//Catch for parsing date exception
+        {
+            Logger.getLogger(MedicalAssign.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_CertsButtonMouseClicked
+
+    private void ReportButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ReportButtonMouseClicked
+        //Code for creating text file with data on gaps in availability
+        System.out.println("Creating Report");
+        String filePath = "D:\\Year Two Pen Files\\COM373\\Projects\\Assignment1\\MedicalAssign\\Availability Time Report.txt";
+        File file = new File(filePath);
+        try {
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.flush();
+            
+            //Header
+            bw.write("Disciplines");
+            bw.newLine();
+            bw.write("Cardiology, Pulmonology, Infectious Disease, Hematology, Intensive Care Medicine, Neurology, Ophthalmology, Orthopedics, Urology, Surgery");
+            bw.newLine();
+            
+            //Main Body
+            bw.write("Cardiology");
+            bw.newLine();
+            bw.write("Pulmonology");
+            bw.newLine();
+            bw.write("Infectious Disease");
+            bw.newLine();
+            bw.write("Hematology");
+            bw.newLine();
+            bw.write("Intensive Care Medicine");
+            bw.newLine();
+            bw.write("Neurology");
+            bw.newLine();
+            bw.write("Ophthalmology");
+            bw.newLine();
+            bw.write("Orthopedics");
+            bw.newLine();
+            bw.write("Urology");
+            bw.newLine();
+            bw.write("Surgery");
+            bw.newLine();
+            
+            //Closing
+            bw.flush();
+            bw.close();
+            fw.close();
+            System.out.println("Report Created");
+        }
+        
+        catch (IOException ex)//Catch for IOException
+        {
+            Logger.getLogger(MedicalAssign.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ReportButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -445,7 +559,9 @@ public class MedicalAssign extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AddButton;
     private javax.swing.JTextField AddressField;
+    private javax.swing.JButton CertsButton;
     private javax.swing.JTextField ContactField;
     private javax.swing.JTextField DateField;
     private javax.swing.JButton DeleteButton;
@@ -453,21 +569,19 @@ public class MedicalAssign extends javax.swing.JFrame {
     private javax.swing.JButton ExportButton;
     private javax.swing.JTextField FilterField;
     private javax.swing.JButton ImportButton;
+    private javax.swing.JLabel LabelButton;
     private javax.swing.JTable MainTable;
+    private javax.swing.JScrollPane MainTablePane;
     private javax.swing.JTextField NameField;
+    private javax.swing.JButton QuitButton;
+    private javax.swing.JButton ReportButton;
+    private javax.swing.JButton ShowAvailableButton;
+    private javax.swing.JButton TimeImportButton;
     private javax.swing.JTable TimeTable;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
+    private javax.swing.JScrollPane TimeTablePane;
+    private javax.swing.JButton UpdateButton;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JFileChooser jFileChooser2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 }

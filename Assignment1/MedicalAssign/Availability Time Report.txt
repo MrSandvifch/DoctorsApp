@@ -1,0 +1,12 @@
+Disciplines
+Cardiology, Pulmonology, Infectious Disease, Hematology, Intensive Care Medicine, Neurology, Ophthalmology, Orthopedics, Urology, Surgery
+Cardiology
+Pulmonology
+Infectious Disease
+Hematology
+Intensive Care Medicine
+Neurology
+Ophthalmology
+Orthopedics
+Urology
+Surgery
